@@ -1,0 +1,20 @@
+---
+- name: Checkout latest kiwix-lib
+  git:
+    repo: https://github.com/kiwix/kiwix-lib.git
+    dest: "{{ data_volume }}/kiwix-lib"
+    version: 8.2.2
+
+- name: Get mustache.hpp for kiwix-lib
+  get_url:
+    url: "https://raw.githubusercontent.com/kainjow/Mustache/v4.0/mustache.hpp"
+    dest: "/usr/include/mustache.hpp"
+
+- name: Build & install kiwix-lib
+  shell: |
+    meson . build
+    ninja -C build install
+    ldconfig -v
+  args:
+    chdir: "{{ data_volume }}/kiwix-lib"
+    creates: /usr/local/include/kiwix

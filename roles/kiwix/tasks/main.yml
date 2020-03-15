@@ -1,0 +1,41 @@
+---
+# Install binary dependencies from upstream
+- include_tasks: deps.yml
+
+# Install libzim from source
+- include_tasks: libzim.yml
+
+# Install kiwix-lib from source
+- include_tasks: kiwix-lib.yml
+
+# Install kiwix-tools from source
+- include_tasks: kiwix-tools.yml
+
+- name: Make kiwix user
+  user:
+    name: kiwix
+
+- name: Create kiwix library
+  shell: |
+    for i in $(ls {{ data_volume }}/*.zim); do
+      kiwix-manage {{ data_volume }}/library.xml add ${i}
+    done
+
+- name: Allow kiwix-serve to listen on low ports
+  shell: |
+    setcap 'cap_net_bind_service=+ep' /usr/local/bin/kiwix-serve
+
+- name: Create kiwix service
+  copy:
+    src: kiwix-serve.service
+    dest: /etc/systemd/system/kiwix-serve.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable and start kiwix-serve service
+  systemd:
+    name: kiwix-serve
+    state: started
+    enabled: yes
+    daemon_reload: yes

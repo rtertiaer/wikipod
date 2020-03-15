@@ -1,0 +1,32 @@
+---
+- name: Install prerequisite packages
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - build-essential
+    - git
+    - pkg-config
+    - libtool
+    - automake
+    - liblzma-dev
+    - libxapian-dev
+    - libicu-dev
+    - zlib1g-dev
+    - meson
+    - ninja-build
+
+- name: Checkout latest libzim
+  git:
+    repo: https://github.com/openzim/libzim.git
+    dest: "{{ data_volume }}/libzim"
+    version: 6.0.2
+
+- name: Build libzim
+  shell: |
+    meson . build
+    ninja -C build install
+  args:
+    chdir: "{{ data_volume }}/libzim"
+    creates: /usr/lib/libzim.so

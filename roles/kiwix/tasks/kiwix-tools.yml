@@ -1,0 +1,13 @@
+---
+- name: Checkout latest kiwix-tools
+  git:
+    repo: https://github.com/kiwix/kiwix-tools.git
+    dest: "{{ data_volume }}/kiwix-tools"
+    version: 3.0.1
+
+- name: Build & install kiwix-tools
+  shell: |
+    meson . build
+    ninja -C build install
+  args:
+    chdir: "{{ data_volume }}/kiwix-tools"

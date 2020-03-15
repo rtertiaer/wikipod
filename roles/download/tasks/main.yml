@@ -1,0 +1,72 @@
+---
+# We use aria2 to download zim files for two reasons:
+# * support for webseed downloads
+# * support for local peer discovery; if applying to many local devices
+#     at once, they should utilize the LAN as well to prevent duplication
+#     of downloaded data and speed up the download
+- name: Ensure {{ data_volume }} directory exists
+  file:
+    state: directory
+    path: "{{ data_volume }}"
+    mode: a+rwx
+
+- name: Install aria2 prerequisites
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - git
+    - libssl-dev
+    - build-essential
+    - autoconf
+    - autopoint
+    - libtool
+    - pkg-config
+
+- name: Clone aria2
+  git:
+    repo: https://github.com/aria2/aria2.git
+    dest: "{{ data_volume }}/aria2"
+    version:  release-1.34.0
+
+- name: Build and install aria2
+  shell: |
+    autoreconf -i
+    ./configure --enable-libaria2 --prefix=/usr
+    make -j $(nproc)
+    make install
+  args:
+    chdir: "{{ data_volume }}/aria2"
+    creates: "/usr/bin/aria2c"
+
+- name: Download {{ kiwix_zim_torrent_url }} locally
+  get_url:
+    url: "{{ kiwix_zim_torrent_url }}"
+    dest: "{{ data_volume }}/"
+  register: torrent_file
+
+- name: Get name of ZIM file in torrent
+  shell: |
+    aria2c -S {{ torrent_file.dest }} | egrep -A 4 "^Files:" | egrep "  1\|" | sed "s/  1|.\///"
+  register: kiwix_zim_file
+
+- name: Download {{ kiwix_zim_torrent_url }} to {{ data_volume }}
+  shell: |
+    aria2c -V --bt-enable-lpd --seed-time=0 {{ kiwix_zim_torrent_url }}
+  args:
+    chdir: "{{ data_volume }}"
+    creates: "{{ data_volume }}/{{ kiwix_zim_file.stdout }}"
+
+- name: Seed {{ kiwix_zim_torrent_url }} for 15 minutes for other local downloaders
+  shell: |
+    aria2c -V --bt-enable-lpd --seed-time=900 {{ kiwix_zim_torrent_url }} &
+  async: 930
+  args:
+    chdir: "{{ data_volume }}"
+
+- name: Ensure proper permissions on {{ data_volume }}/{{ kiwix_zim_file.stdout }}
+  file:
+    path: "{{ data_volume }}/{{ kiwix_zim_file.stdout }}"
+    state: file
+    mode: a+rx

@@ -1,0 +1,24 @@
+---
+- name: Install prerequisite packages
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - build-essential
+    - git
+    - zip
+    - pkg-config
+    - libmagic-dev
+    - libtool
+    - automake
+    - liblzma-dev
+    - libctpp2-dev
+    - libcurl4-nss-dev
+    - libmicrohttpd-dev
+    - libxapian-dev
+    - libpugixml-dev
+    - libicu-dev
+    - zlib1g-dev
+    - meson
+    - ninja-build
