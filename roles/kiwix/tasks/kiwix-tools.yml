@@ -3,7 +3,7 @@
   git:
     repo: https://github.com/kiwix/kiwix-tools.git
     dest: "{{ data_volume }}/kiwix-tools"
-    version: 3.0.1
+    version: 3.0.3
 
 - name: Build & install kiwix-tools
   shell: |

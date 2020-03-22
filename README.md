@@ -3,7 +3,7 @@ Install a hosted Wikipedia clone on Debian utilizing [kiwix](https://kiwix.org).
 
 * tested on debian 10.0+
 * utilizes [kiwix-serve](https://wiki.kiwix.org/wiki/Kiwix-serve)
-* downloads a zim file with bittorrent using [aria2](https://aria2.github.io/)
+* downloads zim files with bittorrent using [aria2](https://aria2.github.io/)
 * if targetting multiple hosts, aria2 will use [local peer discovery](https://en.wikipedia.org/wiki/Local_Peer_Discovery) to create a LAN bittorrent swarm, saving bandwidth & time
 
 ## usage
@@ -22,6 +22,5 @@ ansible-playbook -bkK -i hosts site.yml
 ```
 
 ## todo
-* support multiple zim file downloads
 * explicitly host an access point and route all traffic to `kiwix-serve` instance
 * handle "data" volume more gracefully.

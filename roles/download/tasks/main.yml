@@ -28,7 +28,7 @@
   git:
     repo: https://github.com/aria2/aria2.git
     dest: "{{ data_volume }}/aria2"
-    version:  release-1.34.0
+    version:  release-1.35.0
 
 - name: Build and install aria2
   shell: |
@@ -40,33 +40,58 @@
     chdir: "{{ data_volume }}/aria2"
     creates: "/usr/bin/aria2c"
 
-- name: Download {{ kiwix_zim_torrent_url }} locally
+- name: Create aria2c user for seeding
+  user:
+    name: aria2c
+
+- name: Install template aria2c-seed@.service
+  template:
+    src: aria2c-seed@.service
+    dest: /etc/systemd/system/aria2c-seed@.service
+    owner: root
+    group: root
+    mode: 644
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Download all torrent files
   get_url:
-    url: "{{ kiwix_zim_torrent_url }}"
+    url: "{{ item }}"
     dest: "{{ data_volume }}/"
-  register: torrent_file
+  register: torrent_files
+  loop: "{{ kiwix_zim_torrent_urls }}"
 
-- name: Get name of ZIM file in torrent
+- name: Start downloading torrent contents to {{ data_volume }}
   shell: |
-    aria2c -S {{ torrent_file.dest }} | egrep -A 4 "^Files:" | egrep "  1\|" | sed "s/  1|.\///"
-  register: kiwix_zim_file
-
-- name: Download {{ kiwix_zim_torrent_url }} to {{ data_volume }}
-  shell: |
-    aria2c -V --bt-enable-lpd --seed-time=0 {{ kiwix_zim_torrent_url }}
+    aria2c -V --bt-enable-lpd --seed-time=0 --force-save=true {{ item.dest }}
+  async: 86400  # 1 day in seconds
+  loop: "{{ torrent_files.results }}"
   args:
     chdir: "{{ data_volume }}"
-    creates: "{{ data_volume }}/{{ kiwix_zim_file.stdout }}"
+  register: async_downloads
 
-- name: Seed {{ kiwix_zim_torrent_url }} for 15 minutes for other local downloaders
-  shell: |
-    aria2c -V --bt-enable-lpd --seed-time=900 {{ kiwix_zim_torrent_url }} &
-  async: 930
-  args:
-    chdir: "{{ data_volume }}"
+- name: Wait for all torrents to complete
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  loop: "{{ async_downloads.results }}"
+  register: async_download_status
+  until: async_download_status.finished
+  retries: 30
 
-- name: Ensure proper permissions on {{ data_volume }}/{{ kiwix_zim_file.stdout }}
+- name: Ensure proper permissions on {{ data_volume }} & contents
   file:
-    path: "{{ data_volume }}/{{ kiwix_zim_file.stdout }}"
-    state: file
-    mode: a+rx
+    path: "{{ data_volume }}"
+    mode: u=rX,g=rX,o=rX
+    recurse: yes
+
+# Create a systemd service to seed the file at a low & slow pace; torrents
+# stay healthier longer with long term seeders, even if they are slow
+- name: Create systemd services to seed all torrents
+  systemd:
+    name: "aria2c-seed@{{ item.dest | basename }}"
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  loop: "{{ torrent_files.results }}"

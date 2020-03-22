@@ -4,7 +4,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/kiwix-serve --port=80 --library /var/data/library.xml
+ExecStart=/usr/local/bin/kiwix-serve --port=80 --library {{ data_volume }}/library.xml
 User=kiwix
 
 [Install]
