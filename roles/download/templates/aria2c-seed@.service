@@ -4,8 +4,9 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/aria2c -V --bt-enable-lpd -u 20K --force-save=true --torrent-file={{ data_volume }}/%i
+ExecStart=/usr/bin/aria2c -V --bt-enable-lpd -u 20K --force-save=true --log=- --log-level=notice --torrent-file={{ data_volume }}/%i
 User=aria2c
+LogNamespace=aria2c
 Restart=always
 RestartSec=30
 Nice=19

@@ -21,9 +21,18 @@
       kiwix-manage {{ data_volume }}/library.xml add ${i}
     done
 
-- name: Allow kiwix-serve to listen on low ports
-  shell: |
-    setcap 'cap_net_bind_service=+ep' /usr/local/bin/kiwix-serve
+- name: Configure kiwix logging to prevent thrashing an SD card
+  copy:
+    src: journald@kiwix.conf
+    dest: /etc/systemd/journald@kiwix.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Activate kiwix logging
+  systemd:
+    name: systemd-journald
+    state: restarted
 
 - name: Create kiwix service
   template:

@@ -44,6 +44,19 @@
   user:
     name: aria2c
 
+- name: Configure aria2c logging to prevent thrashing an SD card
+  copy:
+    src: journald@aria2c.conf
+    dest: /etc/systemd/journald@aria2c.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Activate aria2c logging
+  systemd:
+    name: systemd-journald
+    state: restarted
+
 - name: Install template aria2c-seed@.service
   template:
     src: aria2c-seed@.service
