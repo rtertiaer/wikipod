@@ -5,9 +5,11 @@
     dest: "{{ data_volume }}/kiwix-lib"
     version: 9.0.1
 
+
+    # Mustache v4.0 doesn't work here; see https://github.com/kiwix/kiwix-lib/issues/264
 - name: Get mustache.hpp for kiwix-lib
   get_url:
-    url: "https://raw.githubusercontent.com/kainjow/Mustache/v4.0/mustache.hpp"
+    url: "https://raw.githubusercontent.com/kainjow/Mustache/v3.2.1/mustache.hpp"
     dest: "/usr/include/mustache.hpp"
 
 - name: Build & install kiwix-lib
