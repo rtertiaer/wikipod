@@ -19,7 +19,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "site.yml"
     ansible.config_file = "vagrant-ansible.cfg"
-    ansible.host_vars = { "default" => { "debug" => true } }
+    ansible.groups = {
+      "dev" => ["default"]
+    }
   end
 
 

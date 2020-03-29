@@ -10,35 +10,10 @@
     path: "{{ data_volume }}"
     mode: a+rwx
 
-- name: Install aria2 prerequisites
+- name: Install aria2
   apt:
-    name: "{{ packages }}"
+    name: aria2
     state: latest
-  vars:
-    packages:
-    - git
-    - libssl-dev
-    - build-essential
-    - autoconf
-    - autopoint
-    - libtool
-    - pkg-config
-
-- name: Clone aria2
-  git:
-    repo: https://github.com/aria2/aria2.git
-    dest: "{{ data_volume }}/aria2"
-    version:  release-1.35.0
-
-- name: Build and install aria2
-  shell: |
-    autoreconf -i
-    ./configure --enable-libaria2 --prefix=/usr
-    make -j $(nproc)
-    make install
-  args:
-    chdir: "{{ data_volume }}/aria2"
-    creates: "/usr/bin/aria2c"
 
 - name: Create aria2c user for seeding
   user:

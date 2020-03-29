@@ -23,10 +23,11 @@
     dest: "{{ data_volume }}/libzim"
     version: 6.0.2
 
+# We build with 1 thread to prevent thrashing IO on small systems, like Raspberry Pis
 - name: Build libzim
   shell: |
     meson . build
-    ninja -C build install
+    ninja -j 1 -C build install
   args:
     chdir: "{{ data_volume }}/libzim"
     creates: /usr/lib/libzim.so

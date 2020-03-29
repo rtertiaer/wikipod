@@ -1,5 +1,2 @@
 ---
-kiwix_zim_torrent_urls:
-  - http://download.kiwix.org/zim/wikipedia_en_ray_charles.zim.torrent
-  - http://download.kiwix.org/zim/crafts.stackexchange.com_en_all.zim.torrent
 data_volume: /var/data

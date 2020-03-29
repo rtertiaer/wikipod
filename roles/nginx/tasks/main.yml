@@ -24,19 +24,6 @@
   notify:
     - Restart nginx
 
-- name: Set up tmpfs for Nginx logs to prevent thrashing SD card
-  mount:
-    path: /var/log/nginx
-    fstype: tmpfs
-    src: tmpfs
-    state: mounted
-    # GID 4 is for `adm`; these ar the defaults for this dir on Debian
-    # We also enforce a max size here, because apparently Nginx's max size
-    # param for cache sizing is not 100% honored.
-    opts: rw,size=16M,nr_inodes=5k,noexec,nodev,nosuid,uid=1,gid=4,mode=1755
-  notify:
-    - Restart nginx
-
 - name: Manage nginx configuration for kiwix
   copy:
     src: kiwix.conf

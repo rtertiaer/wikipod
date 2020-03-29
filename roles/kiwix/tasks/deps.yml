@@ -22,3 +22,4 @@
     - zlib1g-dev
     - meson
     - ninja-build
+    - libaria2-0-dev

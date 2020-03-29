@@ -12,10 +12,11 @@
     url: "https://raw.githubusercontent.com/kainjow/Mustache/v3.2.1/mustache.hpp"
     dest: "/usr/include/mustache.hpp"
 
+# We build with 1 thread to prevent thrashing IO on small systems, like Raspberry Pis
 - name: Build & install kiwix-lib
   shell: |
     meson . build
-    ninja -C build install
+    ninja -j 1 -C build install
     ldconfig -v
   args:
     chdir: "{{ data_volume }}/kiwix-lib"

@@ -5,9 +5,11 @@
     dest: "{{ data_volume }}/kiwix-tools"
     version: 3.0.3
 
+# We only build with 1 thread to prevent thrashing IO on small
+# devices like Raspberry Pis
 - name: Build & install kiwix-tools
   shell: |
     meson . build
-    ninja -C build install
+    ninja -j 1 -C build install
   args:
     chdir: "{{ data_volume }}/kiwix-tools"

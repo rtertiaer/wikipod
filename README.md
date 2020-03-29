@@ -11,7 +11,7 @@ Install a hosted Wikipedia clone on Debian utilizing [kiwix](https://kiwix.org).
 ## usage
 ### testing
 
-First, [install Vagrant](https://www.vagrantup.com/), then run:
+First, [install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-the-control-machine), then [install Vagrant](https://www.vagrantup.com/), then run:
 ```
 vagrant up
 ```
@@ -28,3 +28,4 @@ ansible-playbook -bkK -i hosts site.yml
 * explicitly host an access point and route all traffic to `kiwix-serve` instance
 * handle "data" volume more gracefully.
 * set up `unattended-upgrades` & `logrotate`
+* implement some measures to lengthen the lifespan of an SD card, like [these suggestions](https://raspberrypi.stackexchange.com/questions/169/how-can-i-extend-the-life-of-my-sd-card) and perhaps disabling rsyslogd, cups
