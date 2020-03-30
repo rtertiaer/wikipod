@@ -1,4 +1,9 @@
 ---
 kiwix_zim_torrent_urls:
-  - http://download.kiwix.org/zim/wikipedia_en_ray_charles.zim.torrent
-  - http://download.kiwix.org/zim/crafts.stackexchange.com_en_all.zim.torrent
+  - http://download.kiwix.org/zim/wikipedia_en_all_maxi.zim.torrent
+  - http://download.kiwix.org/zim/wikipedia_es_all_maxi.zim.torrent
+  - http://download.kiwix.org/zim/wikipedia_zh_all_maxi.zim.torrent
+  - http://download.kiwix.org/zim/wiktionary_es_all_maxi.zim.torrent
+  - http://download.kiwix.org/zim/wiktionary_en_all_maxi.zim.torrent
+  - http://download.kiwix.org/zim/wiktionary_zh_all_maxi.zim.torrent
+  - http://download.kiwix.org/zim/gutenberg_en_all.zim.torrent

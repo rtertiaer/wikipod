@@ -13,3 +13,11 @@
     name: unattended-upgrades
     state: latest
 
+# what can I say, I'm opinionated
+- name: install base packages
+  package: name={{ item }} state=latest
+  with_items:
+    - tmux
+    - vim
+    - dstat
+    - curl

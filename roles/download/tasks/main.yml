@@ -48,25 +48,37 @@
   get_url:
     url: "{{ item }}"
     dest: "{{ data_volume }}/"
+  become: yes
+  become_user: aria2c
   register: torrent_files
   loop: "{{ kiwix_zim_torrent_urls }}"
 
 - name: Start downloading torrent contents to {{ data_volume }}
   shell: |
-    aria2c -V --bt-enable-lpd --seed-time=0 --force-save=true {{ item.dest }}
+    aria2c --bt-enable-lpd --seed-time=0 --force-save=true {{ item.dest }}
   async: 86400  # 1 day in seconds
+  poll: 0
+  become: yes
+  become_user: aria2c
   loop: "{{ torrent_files.results }}"
   args:
     chdir: "{{ data_volume }}"
   register: async_downloads
 
+# Check every minute for a total of 300 tries, in total 5 hours.
+# This may indeed be much longer for big torrents... what's a sane
+# value here?
+# TODO: make the delay & retries configurable
 - name: Wait for all torrents to complete
   async_status:
     jid: "{{ item.ansible_job_id }}"
   loop: "{{ async_downloads.results }}"
+  become: yes
+  become_user: aria2c
   register: async_download_status
   until: async_download_status.finished
-  retries: 30
+  retries: 300
+  delay: 60
 
 - name: Ensure proper permissions on {{ data_volume }} & contents
   file:
