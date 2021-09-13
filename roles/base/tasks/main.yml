@@ -21,3 +21,4 @@
     - vim
     - dstat
     - curl
+    - rsync
