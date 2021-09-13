@@ -5,7 +5,7 @@
     fstype: tmpfs
     src: tmpfs
     state: mounted
-    opts: rw,size=20M,nr_inodes=5k,noexec,nodev,nosuid,uid=1,gid=1,mode=1755
+    opts: rw,size=40M,nr_inodes=5k,noexec,nodev,nosuid,uid=1,gid=1,mode=1755
 
 # This is a compromise on SD card lifespan.
 - name: Install unattended-upgrades
